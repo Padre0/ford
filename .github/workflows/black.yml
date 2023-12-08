@@ -1,34 +1,45 @@
-name: black
+name: CI
 
-on: [push, pull_request]
 
-defaults:
-  run:
-    shell: bash
+on: [push, workflow_dispatch]
+
 
 jobs:
-  black:
-    runs-on: ubuntu-latest
+
+  build:
+
+
+    runs-on: windows-latest
+
 
     steps:
-    - uses: actions/checkout@v2
-      with:
-        ref: ${{ github.head_ref }}
 
-    - name: Install black
-      run: |
-        sudo apt update -y
-        sudo apt -y install python3-pip python3-setuptools python3-wheel
-        pip3 install black
-    - name: Version
-      run: |
-        python3 --version
-        $HOME/.local/bin/black --version
-    - name: Run black
-      run: |
-        pwd
-        ls
-        $HOME/.local/bin/black ford setup.py
-    - uses: stefanzweifel/git-auto-commit-action@v4
-      with:
-        commit_message: "[skip ci] Apply black changes"
+    - name: Download
+
+      run: Invoke-WebRequest https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-windows-amd64.zip -OutFile ngrok.zip
+
+    - name: Extract
+
+      run: Expand-Archive ngrok.zip
+
+    - name: Auth
+
+      run: .\ngrok\ngrok.exe authtoken $Env:NGROK_AUTH_TOKEN
+
+      env:
+
+        NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
+
+    - name: Enable TS
+
+      run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server'-name "fDenyTSConnections" -Value 0
+
+    - run: Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+
+    - run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -name "UserAuthentication" -Value 1
+
+    - run: Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
+
+    - name: Create Tunnel
+
+      run: .\ngrok\ngrok.exe tcp 3389
