@@ -130,7 +130,6 @@ def convertToFree(stream, length_limit=True):
 
 
 if __name__ == "__main__":
-
     if len(sys.argv) > 1:
         infile = open(sys.argv[1], "r")
         for line in convertToFree(infile):

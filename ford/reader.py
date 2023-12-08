@@ -228,7 +228,6 @@ class FortranReader(object):
         linebuffer = ""
 
         while not done:
-
             line = next(self.reader)
 
             self.line_number += 1

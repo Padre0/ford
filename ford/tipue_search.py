@@ -46,7 +46,6 @@ except ImportError:
 
 class Tipue_Search_JSON_Generator(object):
     def __init__(self, output_path, project_url):
-
         self.output_path = output_path
         self.siteurl = project_url
         self.json_nodes = []
